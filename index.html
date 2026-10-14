@@ -107,6 +107,10 @@ footer.win{font-size:1.2rem}
 .sc h3{font-family:'Fraunces',Georgia,serif;font-size:1.3rem;margin:0}
 .sc .nt{margin:0;font-style:italic;line-height:1.45}
 .sc .sg{color:var(--gold);font-weight:700}
+.syncbox{border:1px solid rgba(201,168,76,.5);border-radius:12px;padding:10px 14px;margin:-4px 0 14px;display:grid;gap:8px}
+.syncbox summary{cursor:pointer;color:var(--gold);font-weight:700}
+.syncbox input{box-sizing:border-box;width:100%;background:rgba(13,21,48,.6);border:1px solid rgba(201,168,76,.6);color:var(--ink);border-radius:10px;padding:11px 12px;font:500 1rem 'DM Sans',sans-serif}
+.syncbox p{margin:0;font-size:.9rem}.rl{word-break:break-all;opacity:.85}
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
@@ -116,6 +120,12 @@ footer.win{font-size:1.2rem}
 <p class="sub">Your tickets. Two people. Tap a ticket when you've done it together.</p>
 <div class="pair"><input id="a" placeholder="Your name" aria-label="Your name"><span>🧡</span><input id="b" placeholder="Their name" aria-label="Friend's name"></div>
 <div class="sync" id="sync"></div>
+<details class="syncbox" id="syncbox" hidden><summary>Sync with MaHlongwa</summary>
+<p>Type the same secret code on both phones, or send her the link below.</p>
+<input id="roomin" placeholder="e.g. sizwe-mahlongwa-2026-xk7" autocomplete="off">
+<button type="button" class="btn main" id="roomgo">Connect</button>
+<p id="roomlink" class="rl"></p>
+<button type="button" class="btn" id="roomcopy" hidden>Copy link for her</button></details>
 <div class="next" id="next" hidden></div>
 <div class="tabs" role="tablist"><button role="tab" id="t1" aria-selected="true" data-tab="list">The list</button><button role="tab" id="t2" aria-selected="false" data-tab="live"><i class="dot"></i>Live now</button><button role="tab" id="t3" aria-selected="false" data-tab="mem">Memories</button><button role="tab" id="t4" aria-selected="false" data-tab="story">Story</button></div>
 <div class="bar"><i id="fill"></i></div>
@@ -135,8 +145,14 @@ footer.win{font-size:1.2rem}
 <footer id="foot">Good food. Good music. Good people.</footer>
 </main>
 <div id="win" hidden role="dialog" aria-label="All tickets done"><canvas id="cf"></canvas><div class="wbox"><div style="font-size:3rem">🧡</div><h2>We did it</h2><p id="wn"></p><p>Every ticket stamped.</p><button type="button" class="btn main" id="wstory">See our story</button><button type="button" class="btn" id="wclose">Close</button></div></div>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 <script>
-/* Standalone mode: photos and downloads work on this device only (no Claude account needed). */
+/* LIVE SYNC (optional): paste your Firebase web app config here. Leave projectId empty to stay on-device only. */
+var FIREBASE_CONFIG={apiKey:"",authDomain:"",projectId:"",storageBucket:"",messagingSenderId:"",appId:""};
+var fs=null,roomId="",fetching={};
+/* Photos and downloads: stored on this device, and in your Firebase project when sync is on. */
 var PH={};try{PH=JSON.parse(localStorage.getItem("bucket-sim-photos")||"{}")}catch(e){}
 function blobUrl(id){return PH[id]||""}
 var LOCALASSETS={
@@ -144,14 +160,16 @@ var LOCALASSETS={
   var fr=new FileReader();
   fr.onerror=function(){rej({code:"read_failed",message:"read"})};
   fr.onload=function(){
-   var id="p"+Date.now().toString(36)+Math.random().toString(36).slice(2,6);
-   PH[id]=fr.result;
-   try{localStorage.setItem("bucket-sim-photos",JSON.stringify(PH));res({id:id})}
-   catch(e){delete PH[id];rej({code:"storage_full",message:"storage"})}
+   var id="p"+Date.now().toString(36)+Math.random().toString(36).slice(2,6),data=fr.result,cloud=!!(fs&&roomId);
+   PH[id]=data;
+   try{localStorage.setItem("bucket-sim-photos",JSON.stringify(PH))}
+   catch(e){if(!cloud){delete PH[id];rej({code:"storage_full",message:"storage"});return}}
+   if(cloud){fs.collection("rooms").doc(roomId).collection("photos").doc(id).set({d:data}).then(function(){res({id:id})},function(){rej({code:"cloud_failed",message:"cloud"})})}
+   else res({id:id});
   };
   fr.readAsDataURL(blob);
  })},
- delete:function(id){delete PH[id];try{localStorage.setItem("bucket-sim-photos",JSON.stringify(PH))}catch(e){}return Promise.resolve({deleted:true})}
+ delete:function(id){delete PH[id];if(fs&&roomId){try{fs.collection("rooms").doc(roomId).collection("photos").doc(id).delete().catch(function(){})}catch(e){}}try{localStorage.setItem("bucket-sim-photos",JSON.stringify(PH))}catch(e){}return Promise.resolve({deleted:true})}
 };
 var LOCALDL={save:function(o){return new Promise(function(res){
  var u=URL.createObjectURL(o.data),a=document.createElement("a");
@@ -382,16 +400,18 @@ async function doPush(){
  if(remoteExists){p=diff(cur,lastObj||EMPTY);if(!p)return}
  pushing=true;
  try{
+  var wasSet=!remoteExists;
   if(remoteExists)await ref.update(p);else{await ref.set(cur);remoteExists=true}
-  lastObj=cur;setSync("\u25cf Synced live");pushing=false;
-  if(ss(shared())!==ss(lastObj))schedulePush();
+  lastObj=wasSet?cur:mergeLocal(lastObj||EMPTY,p);setSync("\u25cf Synced live");pushing=false;
+  if(diff(shared(),lastObj||EMPTY))schedulePush();
  }catch(e){
   pushing=false;
-  if(e&&e.code==="invalid_argument"){canWrite=false;setSync("View only: ask to be invited as a Contributor")}
+  if(e&&e.code==="not-found"){remoteExists=false;schedulePush()}
+  else if(e&&e.code==="permission-denied"){canWrite=false;setSync("Sync blocked: check the Firebase rules")}
   else setSync("Saved on this phone");
  }
 }
-function applyRemote(d){
+function applyRemote(d,base){
  var dn=[];
  Object.keys(d.done||{}).forEach(function(k){dn[+k]=!!d.done[k]});
  state.done=dn;
@@ -399,45 +419,103 @@ function applyRemote(d){
  state.plan=d.plan||{};state.mem=d.mem||{};state.sd=d.sd||{};
  state.a=d.a||"";state.b=d.b||"";state.ed=d.ed||{};state.del=d.del||{};
  rebuildItems();
- lastObj=shared();
+ lastObj=base||shared();
  try{localStorage.setItem("bucket-sim",JSON.stringify(state))}catch(e){}
  document.getElementById("a").value=state.a;document.getElementById("b").value=state.b;
- buildList();render();
+ buildList();render();fetchPhotos();
+}
+function mergeLocal(remote,patch){
+ if(!patch)return remote;
+ var m=JSON.parse(JSON.stringify(remote));
+ ["done","plan","sd","mem","ed","del"].forEach(function(f){if(patch[f]){m[f]=m[f]||{};Object.keys(patch[f]).forEach(function(k){m[f][k]=patch[f][k]})}});
+ ["a","b","custom"].forEach(function(f){if(patch[f]!==undefined)m[f]=patch[f]});
+ return m;
+}
+function applySnap(d){
+ var rn=norm(d),patch=lastObj?diff(shared(),lastObj):null,m=mergeLocal(rn,patch);
+ if(ss(m)===ss(shared())){lastObj=rn;return}
+ var a=document.activeElement;
+ if(a&&a.tagName==="INPUT"){pendingRemote=d;return}
+ applyRemote(m,rn);
 }
 function onSnap(snap){
- if(snap.metadata&&snap.metadata.hasPendingWrites)return;
  remoteExists=snap.exists;
  setSync(canWrite?"\u25cf Synced live":"View only: ask to be invited as a Contributor");
  if(!snap.exists){if(!lastObj&&ss(shared())!==ss(EMPTY))schedulePush();return}
- if(pushTimer||pushing)return;
- var d=snap.data()||{};
- if(ss(norm(d))===ss(shared())){lastObj=shared();return}
- var a=document.activeElement;
- if(a&&a.tagName==="INPUT"){pendingRemote=d;return}
- applyRemote(d);
+ applySnap(snap.data()||{});
 }
 document.addEventListener("focusout",function(){setTimeout(function(){
  var a=document.activeElement;
- if(pendingRemote&&!(a&&a.tagName==="INPUT")&&!pushTimer&&!pushing){var p=pendingRemote;pendingRemote=null;applyRemote(p)}
+ if(pendingRemote&&!(a&&a.tagName==="INPUT")){var p=pendingRemote;pendingRemote=null;applySnap(p)}
 },50)});
-(async function(){
+function makeDb(store,room){
+ var ref=store.collection("rooms").doc(room);
+ return {doc:function(){return {
+  onSnapshot:function(ok,err){return ref.onSnapshot(function(snap){ok({exists:snap.exists,data:function(){return snap.data()},metadata:{hasPendingWrites:snap.metadata.hasPendingWrites}})},err)},
+  set:function(o){return ref.set(o)},
+  update:function(p){
+   var args=[];
+   Object.keys(p).forEach(function(f){
+    var v=p[f];
+    if(f==="custom"||f==="a"||f==="b"){args.push(f,v)}
+    else Object.keys(v).forEach(function(k){args.push(new firebase.firestore.FieldPath(f,k),v[k])});
+   });
+   return ref.update.apply(ref,args);
+  }
+ }}};
+}
+function fetchPhotos(){
+ if(!fs||!roomId)return;
+ Object.keys(state.mem||{}).forEach(function(k){
+  var id=state.mem[k]&&state.mem[k].p;
+  if(!id||PH[id]||fetching[id])return;
+  fetching[id]=1;
+  fs.collection("rooms").doc(roomId).collection("photos").doc(id).get().then(function(sn){
+   delete fetching[id];
+   if(sn.exists&&sn.data().d){
+    PH[id]=sn.data().d;
+    try{localStorage.setItem("bucket-sim-photos",JSON.stringify(PH))}catch(e){}
+    renderMem();if(!document.getElementById("story").hidden)renderStory();
+   }
+  },function(){delete fetching[id]});
+ });
+}
+(function initSync(){
+ var cfg=FIREBASE_CONFIG||{};
+ try{var q=new URLSearchParams(location.search).get("room");if(q)localStorage.setItem("bucket-room",q)}catch(e){}
+ try{roomId=localStorage.getItem("bucket-room")||""}catch(e){}
+ if(!cfg.projectId){setSync("Saved on this phone");return}
+ var box=document.getElementById("syncbox");box.hidden=false;
+ document.getElementById("roomin").value=roomId;
+ var link=roomId?location.origin+location.pathname+"?room="+encodeURIComponent(roomId):"";
+ document.getElementById("roomlink").textContent=link;
+ document.getElementById("roomcopy").hidden=!link;
+ document.getElementById("roomcopy").addEventListener("click",function(){
+  try{navigator.clipboard.writeText(link).then(function(){setSync("Link copied")})}catch(e){}
+ });
+ document.getElementById("roomgo").addEventListener("click",function(){
+  var v=document.getElementById("roomin").value.trim();
+  if(v.length<8){setSync("Use a code with at least 8 characters");return}
+  try{localStorage.setItem("bucket-room",v)}catch(e){}
+  location.href=location.pathname+"?room="+encodeURIComponent(v);
+ });
+ if(!roomId){setSync("Saved on this phone. Add a sync code to share.");return}
+ if(!window.firebase){setSync("Saved on this phone (sync not loaded)");return}
  try{
-  if(!window.claude||!window.claude.use){setSync("Saved on this phone");return}
-  try{assets=await window.claude.use("assets");renderMem()}catch(e){}
-  try{dl=await window.claude.use("downloads")}catch(e){}
-  db=await window.claude.use("db");
-  if(!db){setSync("Saved on this phone");return}
-  var user=await window.claude.use("user");
-  if(user&&user.can){var w=await user.can("data.write");if(w===false)canWrite=false}
-  setSync(canWrite?"Connecting...":"View only: ask to be invited as a Contributor");
-  ref=db.doc("bucket/main");
-  ref.onSnapshot(onSnap,function(){setSync("Saved on this phone")});
+  firebase.initializeApp(cfg);
+  fs=firebase.firestore();
+  setSync("Connecting...");
+  firebase.auth().signInAnonymously().then(function(){
+   db=makeDb(fs,roomId);ref=db.doc();
+   ref.onSnapshot(onSnap,function(){setSync("Saved on this phone (sync error)")});
+   fetchPhotos();
+  }).catch(function(){setSync("Saved on this phone (sign-in failed)")});
  }catch(e){setSync("Saved on this phone")}
 })();
 var assets=LOCALASSETS,pf=document.getElementById("pf"),photoFor=-1;
 function photoHtml(i,m){
  var h="";
- if(m.p)h+='<img class="ph" src="'+blobUrl(m.p)+'" alt="Photo from this memory" loading="lazy">';
+ if(m.p)h+=blobUrl(m.p)?'<img class="ph" src="'+blobUrl(m.p)+'" alt="Photo from this memory" loading="lazy">':'<small>Loading photo...</small>';
  if(assets)h+='<div class="act" style="justify-content:flex-start"><button type="button" class="mini" data-photo="'+i+'">'+(m.p?"Change photo":"Add photo")+'</button>'+(m.p?'<button type="button" class="mini" data-rmphoto="'+i+'">Remove photo</button>':'')+'</div>';
  return h;
 }
@@ -516,7 +594,7 @@ function renderStory(){
  es.forEach(function(x){
   var it=items[x.i],m=x.m;
   h+='<article class="sc">'+(m.d?'<div class="sd">'+esc(niceDate(m.d))+'</div>':'')+'<h3>'+it[0]+' '+it[1]+'</h3>'
-  +(m.p?'<img class="ph" src="'+blobUrl(m.p)+'" alt="" loading="lazy">':'')
+  +(m.p&&blobUrl(m.p)?'<img class="ph" src="'+blobUrl(m.p)+'" alt="" loading="lazy">':'')
   +(m.n?'<p class="nt">'+esc(m.n)+'</p>':'')
   +(m.s?'<div class="sg">\u266a '+esc(m.s)+'</div>':'')+'</article>';
  });
