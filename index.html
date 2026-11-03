@@ -111,6 +111,27 @@ footer.win{font-size:1.2rem}
 .syncbox summary{cursor:pointer;color:var(--gold);font-weight:700}
 .syncbox input{box-sizing:border-box;width:100%;background:rgba(13,21,48,.6);border:1px solid rgba(201,168,76,.6);color:var(--ink);border-radius:10px;padding:11px 12px;font:500 1rem 'DM Sans',sans-serif}
 .syncbox p{margin:0;font-size:.9rem}.rl{word-break:break-all;opacity:.85}
+.gs{border:1px solid rgba(201,168,76,.6);background:rgba(201,168,76,.08);border-radius:14px;padding:12px 16px;margin:0 0 18px;display:grid;gap:10px}
+.gs summary{cursor:pointer;color:var(--gold);font-weight:800;font-size:1.05rem}
+.gs p{margin:0;line-height:1.5}
+.gs ol{margin:0;padding-left:1.2em;line-height:1.55;display:grid;gap:6px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:0 0 12px}
+.st{background:rgba(246,239,217,.07);border:1px solid rgba(201,168,76,.4);border-radius:12px;padding:8px 4px;text-align:center;display:grid;gap:2px}
+.st b{font-family:'Fraunces',Georgia,serif;font-size:1.25rem;color:var(--gold)}.st span{font-size:.68rem;opacity:.85}
+.st.wide{grid-column:1/-1;display:flex;justify-content:center;gap:8px;align-items:baseline;padding:8px}
+.since{display:flex;align-items:center;gap:10px;margin:0 0 12px;font-size:.85rem;color:var(--gold);font-weight:700}
+.since input,.mcard select{box-sizing:border-box;background:rgba(13,21,48,.6);border:1px solid rgba(201,168,76,.6);color:var(--ink);border-radius:10px;padding:9px 10px;font:500 1rem 'DM Sans',sans-serif;color-scheme:dark}
+.mcard select{width:100%;padding:11px 12px}
+#filt{display:flex;gap:8px;overflow-x:auto;padding-bottom:10px;margin-bottom:12px}
+.fl{all:unset;cursor:pointer;flex:0 0 auto;padding:8px 12px;border-radius:99px;border:1px solid rgba(201,168,76,.5);font-size:.85rem;font-weight:700}
+.fl[aria-pressed=true]{background:var(--gold);color:var(--navy)}
+.fl:focus-visible,.tag:focus-visible{outline:3px solid var(--gold)}
+.mt{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.mt:empty{display:none}
+.tag{all:unset;font-size:.75rem;font-weight:700;padding:4px 10px;border-radius:99px;background:rgba(201,168,76,.15);border:1px solid rgba(201,168,76,.5);color:var(--gold)}
+button.tag,a.tag{cursor:pointer}
+.gal{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:16px}
+.gal img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:10px;border:1px solid var(--gold)}
+.credit{text-align:center;font-size:.85rem;margin:14px 0 0;opacity:.9}.credit a{color:var(--gold)}
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
@@ -118,23 +139,44 @@ footer.win{font-size:1.2rem}
 <main>
 <h1>Our Bucket List</h1>
 <p class="sub">Your tickets. Two people. Tap a ticket when you've done it together.</p>
+<details class="gs" id="gs" open><summary>Getting started</summary>
+<p><b>This is an example bucket list.</b> Edit it into your own plan: change the tickets, add yours, and delete what doesn't fit.</p>
+<ol>
+<li><b>Add your names</b> in the two boxes below.</li>
+<li><b>Make it yours.</b> Tap <b>Edit</b> or <b>Delete</b> under a ticket, or use <b>Add your own ticket</b> at the bottom of the list.</li>
+<li><b>Stamp it</b> by tapping a ticket when you've done it together.</li>
+<li><b>Live now</b> helps you do one: a timer, simple steps and a plan date with a countdown.</li>
+<li><b>Memories</b> keeps a date, a note, a song and a photo for each ticket you finish.</li>
+<li><b>Story</b> turns your memories into one picture you can save and share.</li>
+<li><b>Tip:</b> in your browser menu, choose <b>Add to Home screen</b> to open it like an app.</li>
+<li><b>Sync your phones</b> (under your names) lets both of you see the same list.</li>
+</ol>
+<p>Or load a ready-made list:</p>
+<div class="row"><button type="button" class="btn" data-tpl="couples">Couples</button><button type="button" class="btn" data-tpl="besties">Besties</button><button type="button" class="btn" data-tpl="family">Family</button></div>
+<button type="button" class="btn main" id="gsdone">Got it, start planning</button>
+<button type="button" class="btn" id="gsclear">Start with a blank list</button></details>
 <div class="pair"><input id="a" placeholder="Your name" aria-label="Your name"><span>🧡</span><input id="b" placeholder="Their name" aria-label="Friend's name"></div>
 <div class="sync" id="sync"></div>
-<details class="syncbox" id="syncbox" hidden><summary>Sync with MaHlongwa</summary>
-<p>Type the same secret code on both phones, or send her the link below.</p>
-<input id="roomin" placeholder="e.g. sizwe-mahlongwa-2026-xk7" autocomplete="off">
+<details class="syncbox" id="syncbox" hidden><summary>Sync your phones</summary>
+<p>Type the same secret code on both phones, or send the link below to your partner.</p>
+<input id="roomin" placeholder="e.g. our-secret-code-2026" autocomplete="off">
 <button type="button" class="btn main" id="roomgo">Connect</button>
 <p id="roomlink" class="rl"></p>
-<button type="button" class="btn" id="roomcopy" hidden>Copy link for her</button></details>
+<button type="button" class="btn" id="roomcopy" hidden>Copy invite link</button></details>
 <div class="next" id="next" hidden></div>
 <div class="tabs" role="tablist"><button role="tab" id="t1" aria-selected="true" data-tab="list">The list</button><button role="tab" id="t2" aria-selected="false" data-tab="live"><i class="dot"></i>Live now</button><button role="tab" id="t3" aria-selected="false" data-tab="mem">Memories</button><button role="tab" id="t4" aria-selected="false" data-tab="story">Story</button></div>
 <div class="bar"><i id="fill"></i></div>
 <div class="count" id="count">0 of 10 done</div>
+<div id="listtop"><div class="stats" id="stats"></div><label class="since">Together since <input type="date" id="since"></label><div id="filt"></div></div>
 <ul id="list"></ul>
 <div class="mcard" id="addbox" style="margin-top:18px"><div class="mh"><span>➕</span><b id="ah">Add your own ticket</b></div>
 <label>Emoji<input id="ne" maxlength="8" placeholder="⭐"></label>
 <label>What do you want to do?<input id="nt" maxlength="60" placeholder="Learn to dance together"></label>
 <label>A little detail<input id="ns" maxlength="80" placeholder="Optional"></label>
+<label>Category<select id="nc"><option value="">None</option><option value="food">🍽️ Food</option><option value="music">🎶 Music</option><option value="travel">✈️ Travel</option><option value="adventure">🔥 Adventure</option><option value="chill">😌 Chill</option><option value="together">💞 Together</option></select></label>
+<label>When<select id="nw"><option value="">Anytime</option><option value="year">This year</option><option value="someday">Someday</option></select></label>
+<label>Budget (R)<input id="nb" type="number" min="0" inputmode="numeric" placeholder="Optional"></label>
+<label>Place<input id="np" maxlength="60" placeholder="e.g. Durban beachfront"></label>
 <button type="button" class="btn main" id="addbtn" data-add="add">Add ticket</button>
 <button type="button" class="btn" id="cancel" data-add="cancel" hidden>Cancel</button>
 <button type="button" class="btn" id="restore" data-add="restore" hidden>Restore deleted tickets</button></div>
@@ -143,6 +185,7 @@ footer.win{font-size:1.2rem}
 <input type="file" id="pf" accept="image/*" hidden>
 <section id="story" hidden></section>
 <footer id="foot">Good food. Good music. Good people.</footer>
+<p class="credit">Made by <a href="https://izzy-10.github.io" target="_blank" rel="noopener">Sizwe Sicelimilo Sibiya</a></p>
 </main>
 <div id="win" hidden role="dialog" aria-label="All tickets done"><canvas id="cf"></canvas><div class="wbox"><div style="font-size:3rem">🧡</div><h2>We did it</h2><p id="wn"></p><p>Every ticket stamped.</p><button type="button" class="btn main" id="wstory">See our story</button><button type="button" class="btn" id="wclose">Close</button></div></div>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
@@ -195,7 +238,7 @@ try{var s=JSON.parse(localStorage.getItem("bucket-sim")||"null");if(s)state=s}ca
 var list=document.getElementById("list");
 function buildList(){list.innerHTML="";items.forEach(function(it,i){
  var li=document.createElement("li");
- li.innerHTML='<button type="button" aria-pressed="false"><span class="stub" aria-hidden="true">'+it[0]+'</span><span class="body"><b>'+it[1]+'</b><small>'+it[2]+'</small><small class="when"></small></span><span class="stamp" aria-hidden="true">DONE</span></button><div class="act"><button type="button" class="mini" data-ed="'+i+'">Edit</button><button type="button" class="mini" data-dl="'+i+'">Delete</button></div>';
+ li.innerHTML='<button type="button" aria-pressed="false"><span class="stub" aria-hidden="true">'+it[0]+'</span><span class="body"><b>'+it[1]+'</b><small>'+it[2]+'</small><small class="when"></small></span><span class="stamp" aria-hidden="true">DONE</span></button><div class="mt"></div><div class="act"><button type="button" class="mini" data-ed="'+i+'">Edit</button><button type="button" class="mini" data-dl="'+i+'">Delete</button></div>';
  li.firstChild.onclick=function(){state.done[i]=!state.done[i];save();render()};
  list.appendChild(li);
 });}
@@ -203,12 +246,12 @@ function save(){try{localStorage.setItem("bucket-sim",JSON.stringify(state))}cat
 function render(){
  var n=0;
  [].forEach.call(list.children,function(li,i){
-  var d=!!state.done[i];if(d&&!isDel(i))n++;li.hidden=isDel(i);
+  var d=!!state.done[i];if(d&&!isDel(i))n++;li.hidden=isDel(i)||(FILT!=="all"&&catOf(i)!==FILT);li.querySelector(".mt").innerHTML=metaHtml(i,d);
   li.classList.toggle("done",d);li.firstChild.setAttribute("aria-pressed",d);
   var pw=state.plan[i];li.querySelector(".when").textContent=(!d&&pw)?"\ud83d\udcc5 "+niceDate(pw)+" \u00b7 "+whenLabel(pw):"";
  });
  document.getElementById("fill").style.width=(n*100/Math.max(1,total()))+"%";
- renderLive();renderMem();renderNext();checkWin(n);document.getElementById("restore").hidden=!Object.keys(state.del||{}).some(function(k){return state.del[k]});
+ renderLive();renderMem();renderNext();renderStats();checkWin(n);document.getElementById("restore").hidden=!Object.keys(state.del||{}).some(function(k){return state.del[k]});
  document.getElementById("count").textContent=n+" of "+total()+" done";
  var f=document.getElementById("foot"),a=state.a||"We",b=state.b;
  if(n===total()&&n>0){f.className="win";f.textContent=(b?a+" & "+b+": ":"")+"Every ticket stamped. Legends. 🧡"}
@@ -282,7 +325,7 @@ document.querySelector(".tabs").addEventListener("click",function(e){
  var b=e.target.closest("[data-tab]");if(!b)return;
  var v=b.getAttribute("data-tab");
  ["t1","t2","t3","t4"].forEach(function(id){var el=document.getElementById(id);el.setAttribute("aria-selected",el.getAttribute("data-tab")===v)});
- list.hidden=v!=="list";document.getElementById("addbox").hidden=v!=="list";lv.hidden=v!=="live";mm.hidden=v!=="mem";document.getElementById("story").hidden=v!=="story";if(v==="story")renderStory();
+ list.hidden=v!=="list";document.getElementById("addbox").hidden=v!=="list";document.getElementById("listtop").hidden=v!=="list";lv.hidden=v!=="live";mm.hidden=v!=="mem";document.getElementById("story").hidden=v!=="story";if(v==="story")renderStory();
 });
 state.plan=state.plan||{};
 function dd(s){var p=s.split("-");return new Date(+p[0],+p[1]-1,+p[2])}
@@ -307,8 +350,8 @@ document.getElementById("addbox").addEventListener("click",function(e){
  if(b.getAttribute("data-add")==="add"){
   var t=document.getElementById("nt").value.trim();if(!t)return;
   var em=document.getElementById("ne").value.trim()||"⭐",sub=document.getElementById("ns").value.trim()||"Our own idea";
-  var it=[esc(em),esc(t),esc(sub)];state.custom=state.custom||[];state.custom.push(it);items.push(it);
-  ["ne","nt","ns"].forEach(function(id){document.getElementById(id).value=""});
+  var it=[esc(em),esc(t),esc(sub)];state.custom=state.custom||[];state.custom.push(it);items.push(it);state.ed[items.length-1]=Object.assign({e:it[0],t:it[1],s:it[2]},xf());
+  ["ne","nt","ns","nc","nw","nb","np"].forEach(function(id){document.getElementById(id).value=""});
  }else{
   var cu=state.custom||[];if(!cu.length)return;
   cu.pop();items.pop();var i=items.length;
@@ -336,18 +379,20 @@ function setEditUI(){
  document.getElementById("addbtn").textContent=editing>=0?"Save changes":"Add ticket";
  document.getElementById("cancel").hidden=editing<0;
 }
-function exitEdit(){editing=-1;["ne","nt","ns"].forEach(function(id){document.getElementById(id).value=""});setEditUI()}
+function exitEdit(){editing=-1;["ne","nt","ns","nc","nw","nb","np"].forEach(function(id){document.getElementById(id).value=""});setEditUI()}
 function startEdit(i){
  editing=i;
  document.getElementById("ne").value=unesc(items[i][0]);
  document.getElementById("nt").value=unesc(items[i][1]);
  document.getElementById("ns").value=unesc(items[i][2]);
+ var o=xo(i);document.getElementById("nc").value=catOf(i);document.getElementById("nw").value=o.w||"";document.getElementById("nb").value=o.b||"";document.getElementById("np").value=unesc(o.p||"");
  setEditUI();
  document.getElementById("addbox").scrollIntoView({behavior:"smooth",block:"center"});
  document.getElementById("nt").focus();
 }
 list.addEventListener("click",function(e){
- var b=e.target.closest("[data-ed],[data-dl]");if(!b)return;
+ var b=e.target.closest("[data-ed],[data-dl],[data-ics]");if(!b)return;
+ if(b.hasAttribute("data-ics")){icsFor(+b.getAttribute("data-ics"));return}
  if(b.hasAttribute("data-ed")){startEdit(+b.getAttribute("data-ed"));return}
  var i=+b.getAttribute("data-dl");
  if(b.getAttribute("data-armed")){state.del[i]=true;if(state.cur===i){stopT();state.cur=-1}save();render();return}
@@ -363,7 +408,7 @@ document.getElementById("addbox").addEventListener("click",function(e){
   e.stopPropagation();
   var t=document.getElementById("nt").value.trim();if(!t)return;
   var em=document.getElementById("ne").value.trim()||"⭐",sub=document.getElementById("ns").value.trim()||"Our own idea";
-  state.ed[editing]={e:esc(em),t:esc(t),s:esc(sub)};
+  state.ed[editing]=Object.assign({e:esc(em),t:esc(t),s:esc(sub)},xf());
   exitEdit();rebuildItems();save();buildList();render();
  }
 },true);
@@ -590,6 +635,8 @@ function storyEntries(){
 function renderStory(){
  var es=storyEntries(),h="",nm=(state.a&&state.b)?esc(state.a)+" &amp; "+esc(state.b):"";
  h+='<h2 class="sh">Our Story</h2><p class="sn">'+nm+'</p>';
+ var gp=es.filter(function(x){return x.m.p&&blobUrl(x.m.p)});
+ if(gp.length>1)h+='<div class="gal">'+gp.map(function(x){return '<img src="'+blobUrl(x.m.p)+'" alt="">'}).join("")+'</div>';
  if(!es.length)h+='<div class="allset">Stamp your first ticket and our story starts here.</div>';
  es.forEach(function(x){
   var it=items[x.i],m=x.m;
@@ -671,6 +718,81 @@ document.getElementById("story").addEventListener("click",async function(e){
  }
  b.textContent="Save our story as an image";
 });
+var CATS=[["food","🍽️","Food"],["music","🎶","Music"],["travel","✈️","Travel"],["adventure","🔥","Adventure"],["chill","😌","Chill"],["together","💞","Together"]];
+var DEFCAT=["music","food","chill","together","travel","travel","together","adventure","chill","together"],FILT="all";
+var TPL={
+besties:[["🍕","Try a new restaurant","Pick somewhere neither of us has been","food"],["🎤","Karaoke night","Songs we know every word to","music"],["🏖️","Beach day","Snacks, music, no schedule","chill"],["🏕️","Weekend away","Pack light, plan nothing","travel"],["🎂","Surprise each other","On a birthday, with a small gift","together"],["📸","Photo booth session","Props are compulsory","together"],["🎮","Game night marathon","Loser makes the food","chill"],["🥾","Sunrise hike","Start before the sun does","adventure"]],
+family:[["🍖","Big family braai","Everyone brings one dish","food"],["🏞️","Day at a nature reserve","Pack a picnic","adventure"],["🎬","Family movie night","Everyone takes a turn to choose","chill"],["🍰","Bake something together","Even if it goes wrong","food"],["🚗","Road trip to see relatives","Make a playlist for the road","travel"],["🎳","Bowling or mini golf","Winner picks dessert","adventure"],["📖","Share family stories","Record an elder telling one","together"],["📸","Family photo","Same place, every year","together"]]
+};
+function xo(i){return state.ed[i]||{}}
+function catOf(i){return xo(i).c||DEFCAT[i]||""}
+function catLabel(k){for(var j=0;j<CATS.length;j++)if(CATS[j][0]===k)return CATS[j][1]+" "+CATS[j][2];return ""}
+function money(n){return "R"+Math.round(n).toLocaleString("en-ZA")}
+function xf(){var g=function(id){return document.getElementById(id).value.trim()};return {c:g("nc"),w:g("nw"),b:g("nb"),p:esc(g("np"))}}
+function metaHtml(i,d){
+ var o=xo(i),h="",c=catOf(i);
+ if(c)h+='<span class="tag">'+catLabel(c)+'</span>';
+ if(o.w)h+='<span class="tag">'+(o.w==="year"?"This year":"Someday")+'</span>';
+ if(+o.b)h+='<span class="tag">'+money(+o.b)+'</span>';
+ if(o.p)h+='<a class="tag" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&amp;query='+encodeURIComponent(unesc(o.p))+'">📍 '+o.p+'</a>';
+ if(!d&&state.plan[i])h+='<button type="button" class="tag" data-ics="'+i+'">📅 Add to calendar</button>';
+ return h;
+}
+function icsFor(i){
+ var p=state.plan[i];if(!p)return;
+ var a=p.replace(/-/g,""),e=dd(p);e.setDate(e.getDate()+1);
+ var b=e.getFullYear()+("0"+(e.getMonth()+1)).slice(-2)+("0"+e.getDate()).slice(-2);
+ var t=unesc(items[i][1]).replace(/[,;\\]/g," "),loc=xo(i).p?unesc(xo(i).p).replace(/[,;\\]/g," "):"";
+ var L=["BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//Our Bucket List//EN","BEGIN:VEVENT","UID:bucket-"+i+"-"+a+"@ourbucketlist","DTSTAMP:"+new Date().toISOString().replace(/[-:]/g,"").slice(0,15)+"Z","DTSTART;VALUE=DATE:"+a,"DTEND;VALUE=DATE:"+b,"SUMMARY:"+t];
+ if(loc)L.push("LOCATION:"+loc);
+ L.push("BEGIN:VALARM","ACTION:DISPLAY","DESCRIPTION:"+t,"TRIGGER:-P1D","END:VALARM","END:VEVENT","END:VCALENDAR");
+ LOCALDL.save({filename:"bucket-ticket.ics",data:new Blob([L.join("\r\n")],{type:"text/calendar"})});
+}
+function renderStats(){
+ var tot=0,done=0,planned=0,mems=0,left=0,spent=0;
+ items.forEach(function(it,i){
+  if(isDel(i))return;tot++;var b=+xo(i).b||0;
+  if(state.done[i]){done++;spent+=b;var m=state.mem[i]||{};if(m.n||m.p||m.s)mems++}
+  else{left+=b;var p=state.plan[i];if(p&&dayDiff(p)>=0)planned++}
+ });
+ var sc=state.plan.since,days=sc?Math.max(0,-dayDiff(sc)):"-";
+ var T=[[done+"/"+tot,"Done"],[planned,"Planned"],[mems,"Memories"],[days,"Days together"]];
+ var h=T.map(function(x){return '<div class="st"><b>'+x[0]+'</b><span>'+x[1]+'</span></div>'}).join("");
+ if(left||spent)h+='<div class="st wide"><b>'+money(left)+'</b><span>still to budget'+(spent?" · "+money(spent)+" spent":"")+'</span></div>';
+ document.getElementById("stats").innerHTML=h;
+ var si=document.getElementById("since");if(si!==document.activeElement)si.value=state.plan.since||"";
+ var f='<button type="button" class="fl" data-f="all" aria-pressed="'+(FILT==="all")+'">All</button>';
+ CATS.forEach(function(c){f+='<button type="button" class="fl" data-f="'+c[0]+'" aria-pressed="'+(FILT===c[0])+'">'+c[1]+' '+c[2]+'</button>'});
+ document.getElementById("filt").innerHTML=f;
+}
+document.getElementById("filt").addEventListener("click",function(e){var b=e.target.closest("[data-f]");if(!b)return;FILT=b.getAttribute("data-f");render()});
+document.getElementById("since").addEventListener("change",function(e){state.plan.since=e.target.value;save();render()});
+function loadTpl(name){
+ if(name==="couples"){items.forEach(function(x,i){state.del[i]=i>=10})}
+ else{
+  items.forEach(function(x,i){state.del[i]=true});
+  state.custom=state.custom||[];
+  TPL[name].forEach(function(t){var it=[esc(t[0]),esc(t[1]),esc(t[2])];state.custom.push(it);items.push(it);state.ed[items.length-1]={e:it[0],t:it[1],s:it[2],c:t[3],w:"",b:"",p:""}});
+ }
+ state.cur=-1;FILT="all";save();buildList();render();
+}
+document.getElementById("gs").addEventListener("click",function(e){
+ var b=e.target.closest("[data-tpl]");if(!b)return;
+ if(!b.getAttribute("data-armed")){var t0=b.textContent;b.setAttribute("data-armed","1");b.textContent="Tap again";setTimeout(function(){b.removeAttribute("data-armed");b.textContent=t0},3500);return}
+ b.removeAttribute("data-armed");loadTpl(b.getAttribute("data-tpl"));
+});
+(function(){
+ var gs=document.getElementById("gs"),seen=false;
+ try{seen=localStorage.getItem("bucket-gs")==="1"}catch(e){}
+ if(seen)gs.open=false;
+ document.getElementById("gsdone").addEventListener("click",function(){gs.open=false;try{localStorage.setItem("bucket-gs","1")}catch(e){}window.scrollTo(0,0)});
+ var cl=document.getElementById("gsclear");
+ cl.addEventListener("click",function(){
+  if(!cl.getAttribute("data-armed")){cl.setAttribute("data-armed","1");cl.textContent="Tap again to clear all tickets";setTimeout(function(){cl.removeAttribute("data-armed");cl.textContent="Start with a blank list"},3500);return}
+  items.forEach(function(x,i){state.del[i]=true});state.cur=-1;save();render();
+  cl.removeAttribute("data-armed");cl.textContent="Cleared. Use Add your own ticket below.";
+ });
+})();
 rebuildItems();buildList();
 render();
 </script>
