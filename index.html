@@ -132,24 +132,43 @@ button.tag,a.tag{cursor:pointer}
 .gal{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:16px}
 .gal img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:10px;border:1px solid var(--gold)}
 .credit{text-align:center;font-size:.85rem;margin:14px 0 0;opacity:.9}.credit a{color:var(--gold)}
+.menubtn{all:unset;position:fixed;top:calc(12px + env(safe-area-inset-top,0px));right:14px;z-index:40;width:44px;height:44px;display:grid;place-items:center;font-size:1.4rem;border-radius:50%;background:rgba(13,21,48,.85);border:1.5px solid var(--gold);color:var(--gold);cursor:pointer}
+.menubtn:focus-visible,.mi:focus-visible,.sbox .x:focus-visible{outline:3px solid var(--gold)}
+h1{padding-right:56px}
+#sheet{position:fixed;inset:0;z-index:60;background:rgba(5,8,20,.8);display:grid;place-items:end center;padding:0}
+.sbox{position:relative;width:100%;max-width:520px;max-height:88vh;overflow:auto;background:linear-gradient(160deg,#16224A,#2A0F2E);border:1.5px solid var(--gold);border-radius:22px 22px 0 0;padding:22px 18px calc(22px + env(safe-area-inset-bottom,0px));display:grid;gap:10px}
+.sbox h2{font-family:'Fraunces',Georgia,serif;color:var(--gold);margin:0 0 4px;font-size:1.6rem}
+.sbox p{margin:0;line-height:1.55}
+.sbox .x{all:unset;position:absolute;top:14px;right:16px;cursor:pointer;font-size:1.3rem;color:var(--gold)}
+.mi{all:unset;box-sizing:border-box;display:block;width:100%;padding:14px;border-radius:12px;border:1px solid rgba(201,168,76,.5);cursor:pointer;font-weight:700}
+.site{margin-top:34px;padding-top:26px;border-top:1px solid rgba(201,168,76,.35);text-align:left;font-style:normal;font-family:'DM Sans',system-ui,sans-serif;color:var(--ink);display:grid;gap:14px}
+.site .brand{font-family:'Fraunces',Georgia,serif;font-weight:800;font-size:1.7rem;letter-spacing:.12em}.site .brand span{color:var(--gold)}
+.site p{margin:0;line-height:1.5}
+.avail{display:flex;align-items:center;gap:10px}.avail i{width:12px;height:12px;border-radius:50%;background:#b5412b;flex:0 0 12px}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:6px}
+.cols h4{margin:0 0 10px;color:var(--gold);letter-spacing:.14em;font-size:.8rem;font-weight:500}
+.cols a{display:block;color:var(--ink);text-decoration:none;padding:7px 0;font-size:1.02rem}.cols a.g{color:var(--gold)}
+.site hr{border:0;border-top:1px solid rgba(201,168,76,.25);width:100%;margin:4px 0}
+.site .fine{opacity:.7;font-size:.88rem}
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
 <body>
 <main>
+<button type="button" class="menubtn" id="menubtn" aria-label="Menu">☰</button>
 <h1>Our Bucket List</h1>
 <p class="sub">Your tickets. Two people. Tap a ticket when you've done it together.</p>
 <details class="gs" id="gs" open><summary>Getting started</summary>
 <p><b>This is an example bucket list.</b> Edit it into your own plan: change the tickets, add yours, and delete what doesn't fit.</p>
 <ol>
-<li><b>Add your names</b> in the two boxes below.</li>
-<li><b>Make it yours.</b> Tap <b>Edit</b> or <b>Delete</b> under a ticket, or use <b>Add your own ticket</b> at the bottom of the list.</li>
-<li><b>Stamp it</b> by tapping a ticket when you've done it together.</li>
-<li><b>Live now</b> helps you do one: a timer, simple steps and a plan date with a countdown.</li>
-<li><b>Memories</b> keeps a date, a note, a song and a photo for each ticket you finish.</li>
-<li><b>Story</b> turns your memories into one picture you can save and share.</li>
-<li><b>Tip:</b> in your browser menu, choose <b>Add to Home screen</b> to open it like an app.</li>
-<li><b>Sync your phones</b> (under your names) lets both of you see the same list.</li>
+<li>Add your names in the two boxes below.</li>
+<li>Tap Edit or Delete under a ticket, or use Add your own ticket at the bottom of the list.</li>
+<li>Tap a ticket when you've done it together to stamp it.</li>
+<li>Live now helps you do one: a timer, simple steps and a plan date.</li>
+<li>Memories keeps a date, a note, a song and a photo for each ticket you finish.</li>
+<li>Story turns your memories into one picture you can save and share.</li>
+<li>Tip: in your browser menu, choose Add to Home screen to open it like an app.</li>
+<li>Sync your phones (under your names) lets both of you see the same list.</li>
 </ol>
 <p>Or load a ready-made list:</p>
 <div class="row"><button type="button" class="btn" data-tpl="couples">Couples</button><button type="button" class="btn" data-tpl="besties">Besties</button><button type="button" class="btn" data-tpl="family">Family</button></div>
@@ -185,8 +204,32 @@ button.tag,a.tag{cursor:pointer}
 <input type="file" id="pf" accept="image/*" hidden>
 <section id="story" hidden></section>
 <footer id="foot">Good food. Good music. Good people.</footer>
-<p class="credit">Made by <a href="https://izzy-10.github.io" target="_blank" rel="noopener">Sizwe Sicelimilo Sibiya</a></p>
+<footer class="site">
+<div class="brand">OUR BUCKET <span>LIST</span></div>
+<p>Plan it. Do it together. Remember it.</p>
+<p class="avail"><i></i>Available for projects &amp; collaborations</p>
+<div class="row"><button type="button" class="btn main" data-go="gs">Get started →</button><button type="button" class="btn" id="fshare">Share this list</button></div>
+<div class="cols"><div><h4>PAGES</h4><a href="#" data-go="home">Home</a><a href="#" data-go="about">About</a><a href="https://wa.me/qr/FZLHEACFAODGC1" target="_blank" rel="noopener">Support</a><a href="#" data-go="privacy">Privacy</a></div>
+<div><h4>CONNECT</h4><a class="g" href="https://tiktok.com/@sizwesibiya7" target="_blank" rel="noopener">Follow me on TikTok</a></div></div>
+<hr><p class="fine">© 2026 Our Bucket List. All rights reserved.</p>
+<p class="fine">Built by Sizwe Sicelimilo Sibiya · Durban, South Africa</p>
+</footer>
 </main>
+<div id="sheet" hidden role="dialog" aria-modal="true"><div class="sbox">
+<button type="button" class="x" id="sclose" aria-label="Close">✕</button>
+<div id="smenu"><h2>Menu</h2>
+<button type="button" class="mi" data-go="list">The list</button>
+<button type="button" class="mi" data-go="live">Live now</button>
+<button type="button" class="mi" data-go="mem">Memories</button>
+<button type="button" class="mi" data-go="story">Story</button>
+<button type="button" class="mi" data-go="gs">Getting started</button>
+<button type="button" class="mi" data-go="sync">Sync your phones</button>
+<button type="button" class="mi" data-go="about">About</button>
+<button type="button" class="mi" data-go="privacy">Privacy</button>
+<button type="button" class="mi" id="langbtn" aria-label="Language">🌍 isiZulu</button></div>
+<div id="sabout" hidden><h2>About</h2><p>Our Bucket List is a free page for planning what you want to do together and remembering it afterwards. Made in Durban, South Africa by Sizwe Sicelimilo Sibiya.</p><button type="button" class="mi" data-go="menu">Back</button></div>
+<div id="spriv" hidden><h2>Privacy</h2><p>Your list, photos and notes are saved on your own device. If you turn on sync, they are also stored in a private room in a Firebase database, and anyone with your secret code can see and edit them. Don't share the code with people you don't trust. We don't sell or share your data.</p><button type="button" class="mi" data-go="menu">Back</button></div>
+</div></div>
 <div id="win" hidden role="dialog" aria-label="All tickets done"><canvas id="cf"></canvas><div class="wbox"><div style="font-size:3rem">🧡</div><h2>We did it</h2><p id="wn"></p><p>Every ticket stamped.</p><button type="button" class="btn main" id="wstory">See our story</button><button type="button" class="btn" id="wclose">Close</button></div></div>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
@@ -781,6 +824,54 @@ document.getElementById("gs").addEventListener("click",function(e){
  if(!b.getAttribute("data-armed")){var t0=b.textContent;b.setAttribute("data-armed","1");b.textContent="Tap again";setTimeout(function(){b.removeAttribute("data-armed");b.textContent=t0},3500);return}
  b.removeAttribute("data-armed");loadTpl(b.getAttribute("data-tpl"));
 });
+var LANG="en",ORIGT=new WeakMap(),ORIGA=new WeakMap(),applying=false,langTimer=null;
+var ZU={"Our Bucket List": "Uhlu Lwethu Lwamaphupho", "Your tickets. Two people. Tap a ticket when you've done it together.": "Amathikithi akho. Abantu ababili. Thinta ithikithi uma senizenzile ndawonye.", "Getting started": "Ukuqala", "This is an example bucket list.": "Lolu uhlu oluyisibonelo.", "Edit it into your own plan: change the tickets, add yours, and delete what doesn't fit.": "Lushintshe lube uhlelo lwakho: shintsha amathikithi, engeza awakho, ususe angadingeki.", "Add your names in the two boxes below.": "Faka amagama enu emabhokisini amabili aphansi.", "Tap Edit or Delete under a ticket, or use Add your own ticket at the bottom of the list.": "Thinta Hlela noma Susa ngaphansi kwethikithi, noma usebenzise Engeza ithikithi lakho ekugcineni kohlu.", "Tap a ticket when you've done it together to stamp it.": "Thinta ithikithi uma senizenzile ndawonye ukuliphawula.", "Live now helps you do one: a timer, simple steps and a plan date.": "Manje ikusiza ukwenza elilodwa: isikhathi, izinyathelo ezilula nosuku lokuhlela.", "Memories keeps a date, a note, a song and a photo for each ticket you finish.": "Izikhumbuzo zigcina usuku, inothi, ingoma nesithombe sethikithi ngalinye elicwengekile.", "Story turns your memories into one picture you can save and share.": "Indaba iguqula izikhumbuzo zenu zibe yisithombe esisodwa ongasigcina futhi usabelane naso.", "Tip: in your browser menu, choose Add to Home screen to open it like an app.": "Isiphakamiso: kumenyu yesiphequluli, khetha Engeza esikrinini sasekhaya ukuze liqale njenge-app.", "Sync your phones (under your names) lets both of you see the same list.": "Hlanganisa amafoni enu (ngaphansi kwamagama) ukuze nobabili nibone uhlu olufanayo.", "Or load a ready-made list:": "Noma layisha uhlu olulungisiwe:", "Couples": "Abathandanayo", "Besties": "Abangani", "Family": "Umndeni", "Tap again": "Thinta futhi", "Got it, start planning": "Ngiyezwa, ake siqale ukuhlela", "Start with a blank list": "Qala ngohlu olungenalutho", "Tap again to clear all tickets": "Thinta futhi ukususa onke amathikithi", "Your name": "Igama lakho", "Their name": "Igama lomlingani wakho", "Together since": "Sinomunye kusukela", "The list": "Uhlu", "Live now": "Manje", "Memories": "Izikhumbuzo", "Story": "Indaba", "Done": "Kwenziwe", "Planned": "Okuhlelwe", "Days together": "Izinsuku ndawonye", "All": "Konke", "🍽️ Food": "🍽️ Ukudla", "🎶 Music": "🎶 Umculo", "✈️ Travel": "✈️ Uhambo", "🔥 Adventure": "🔥 Ukuzijabulisa", "😌 Chill": "😌 Ukuphumula", "💞 Together": "💞 Ndawonye", "Edit": "Hlela", "Delete": "Susa", "Tap again to delete": "Thinta futhi ukususe", "DONE": "KWENZIWE", "📅 Add to calendar": "📅 Faka kukhalenda", "This year": "Kulo nyaka", "Someday": "Ngelinye ilanga", "Anytime": "Noma nini", "None": "Lutho", "Add your own ticket": "Engeza ithikithi lakho", "Edit ticket": "Hlela ithikithi", "Emoji": "I-emoji", "What do you want to do?": "Ufuna ukwenzani?", "A little detail": "Incazelo emfushane", "Category": "Isigaba", "When": "Nini", "Budget (R)": "Isabelomali (R)", "Place": "Indawo", "Add ticket": "Engeza ithikithi", "Save changes": "Gcina izinguquko", "Cancel": "Khansela", "Restore deleted tickets": "Buyisela amathikithi asusiwe", "Optional": "Akubalulekile", "Learn to dance together": "Funda ukudansa ndawonye", "e.g. Durban beachfront": "isib. Ogwini lwaseThekwini", "Plan it for": "Hlela ngomhla", "Start": "Qala", "Pause": "Misa", "Resume": "Qhubeka", "Reset": "Setha kabusha", "We did it. Stamp it.": "Siyenzile. Qamba uphawu.", "Date": "Usuku", "One line to remember": "Umugqa owodwa wokukhumbula", "Song of the day": "Ingoma yosuku", "Add photo": "Engeza isithombe", "Change photo": "Shintsha isithombe", "Remove photo": "Susa isithombe", "Loading photo...": "Iyalayisha isithombe...", "What made it special?": "Yini eyenze kwaba okukhethekile?", "Artist - song": "Umculi - ingoma", "Stamp your first ticket and its memory card shows up here.": "Phawula ithikithi lakho lokuqala, ikhadi lalo lesikhumbuzo livele lapha.", "Stamp your first ticket and our story starts here.": "Phawula ithikithi lakho lokuqala, indaba yethu iqale lapha.", "Our Story": "Indaba Yethu", "Save our story as an image": "Gcina indaba yethu njengesithombe", "Making your image...": "Iyakha isithombe sakho...", "We did it": "Siyenzile", "Every ticket stamped.": "Onke amathikithi aphawuliwe.", "See our story": "Buka indaba yethu", "Close": "Vala", "Today!": "Namuhla!", "Tomorrow": "Kusasa", "Sync your phones": "Hlanganisa amafoni enu", "Type the same secret code on both phones, or send the link below to your partner.": "Bhala ikhodi efanayo ezifonini zombili, noma uthumele isixhumanisi esingezansi komlingani wakho.", "Connect": "Xhuma", "Copy invite link": "Kopisha isixhumanisi sesimemo", "Saved on this phone": "Kugciniwe kule foni", "Saved on this phone. Add a sync code to share.": "Kugciniwe kule foni. Engeza ikhodi ukuze wabelane.", "● Synced live": "● Kuvumelanisiwe", "Good food. Good music. Good people.": "Ukudla okuhle. Umculo omuhle. Abantu abahle.", "Menu": "Imenyu", "Back": "Emuva", "About": "Mayelana", "Privacy": "Ubumfihlo", "Home": "Ikhaya", "Support": "Usizo", "PAGES": "AMAPHEJI", "CONNECT": "XHUMANA", "Follow me on TikTok": "Ngilandele ku-TikTok", "Plan it. Do it together. Remember it.": "Hlela. Yenzeni ndawonye. Khumbulani.", "Available for projects & collaborations": "Ngiyatholakala emiprojekthi nokubambisana", "Get started →": "Qala →", "Share this list": "Yabelana ngalolu hlu", "© 2026 Our Bucket List. All rights reserved.": "© 2026 Uhlu Lwethu Lwamaphupho. Wonke amalungelo agodliwe.", "Built by Sizwe Sicelimilo Sibiya · Durban, South Africa": "Yakhiwe nguSizwe Sicelimilo Sibiya · eThekwini, eNingizimu Afrika", "Our Bucket List is a free page for planning what you want to do together and remembering it afterwards. Made in Durban, South Africa by Sizwe Sicelimilo Sibiya.": "Uhlu Lwethu Lwamaphupho yikhasi lamahhala lokuhlela ongathanda ukukwenza ndawonye nokukukhumbula kamuva. Lakhiwe eThekwini, eNingizimu Afrika nguSizwe Sicelimilo Sibiya.", "Your list, photos and notes are saved on your own device. If you turn on sync, they are also stored in a private room in a Firebase database, and anyone with your secret code can see and edit them. Don't share the code with people you don't trust. We don't sell or share your data.": "Uhlu lwakho, izithombe namanothi kugcinwa kudivayisi yakho. Uma uvula ukuvumelanisa, kugcinwa nasekamelweni eliyimfihlo kudatha ye-Firebase, futhi noma ubani onekhodi yakho eyimfihlo angakubona futhi akuhlele. Ungayabelani ngekhodi nabantu ongabethembi. Asithengisi futhi asabelani ngedatha yakho.", "Amapiano event or festival": "Umcimbi noma umkhosi we-Amapiano", "Dance until the playlist runs out": "Dansa kuze kuphele uhlu lwezingoma", "Rice and chicken cook-off": "Umncintiswano wokupheka ilayisi nenkukhu", "Cook it twice, rate each other's": "Pheka kabili, nihlolane", "Action and thriller marathon": "Imibukiso ye-action ne-thriller ubusuku bonke", "All night, snacks ready": "Ubusuku bonke, ukudla okulula kulungile", "Sunrise or sunset at the Durban beachfront": "Ukuphuma noma ukushona kwelanga ogwini lwaseThekwini", "Phones down for ten minutes": "Amafoni phansi imizuzu eyishumi", "Spontaneous road trip": "Uhambo lwemoto olungahleliwe", "With a playlist we built together": "Nohlu lwezingoma esalwakha ndawonye", "Visit Jozini": "Vakashela eJozini", "Show each other where we come from": "Bonisana lapho sivela khona", "Same-spot photo, every year": "Isithombe endaweni efanayo, njalo ngonyaka", "Same pose, new year": "Isimo esifanayo, unyaka omusha", "Build something together": "Akha okuthile ndawonye", "A site, an app or a small business": "Iwebhusayithi, i-app noma ibhizinisi elincane", "Do-nothing day": "Usuku lokungenzi lutho", "Good food, good music, solid sleep": "Ukudla okuhle, umculo omuhle, ukulala kahle", "Letters for 5 years from now": "Izincwadi zeminyaka emi-5 ezayo", "Seal them. Open them together.": "Zivale. Nizivule ndawonye."};
+var PAT=[[/^(\d+) of (\d+) done$/,"$1 kwabangu-$2 kwenziwe"],[/in (\d+) days/,"ezinsukwini ezingu-$1"],[/(\d+) days? ago/,"ezinsukwini ezingu-$1 ezedlule"],[/still to budget/,"esasele esabelomalini"],[/ spent/," kusetshenzisiwe"]];
+function trT(s){var k=s.trim();if(!k)return s;if(ZU[k]!==undefined)return s.replace(k,ZU[k]);var r=s;PAT.forEach(function(p){r=r.replace(p[0],p[1])});return r}
+function applyLang(){
+ applying=true;
+ var w=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT,null),n,L=[];
+ while((n=w.nextNode())){var pn=n.parentNode.nodeName;if(pn!=="SCRIPT"&&pn!=="STYLE")L.push(n)}
+ L.forEach(function(n){
+  if(LANG==="zu"){var o=ORIGT.has(n)?ORIGT.get(n):n.nodeValue;if(!ORIGT.has(n))ORIGT.set(n,o);var t=trT(o);if(n.nodeValue!==t)n.nodeValue=t}
+  else if(ORIGT.has(n)){var o2=ORIGT.get(n);if(n.nodeValue!==o2)n.nodeValue=o2}
+ });
+ Array.prototype.forEach.call(document.querySelectorAll("[placeholder],[aria-label]"),function(el){
+  var o=ORIGA.get(el);if(!o){o={placeholder:el.getAttribute("placeholder"),"aria-label":el.getAttribute("aria-label")};ORIGA.set(el,o)}
+  ["placeholder","aria-label"].forEach(function(a){var v=o[a];if(v===null)return;if(LANG==="zu"&&ZU[v]!==undefined)v=ZU[v];if(el.getAttribute(a)!==v)el.setAttribute(a,v)});
+ });
+ document.title=LANG==="zu"?ZU["Our Bucket List"]:"Our Bucket List";
+ applying=false;
+}
+function setLang(l){LANG=l;try{localStorage.setItem("bucket-lang",l)}catch(e){}document.documentElement.lang=l==="zu"?"zu":"en";applyLang();document.getElementById("langbtn").textContent=l==="zu"?"🌍 English":"🌍 isiZulu"}
+new MutationObserver(function(){if(applying||LANG!=="zu")return;clearTimeout(langTimer);langTimer=setTimeout(applyLang,40)}).observe(document.body,{childList:true,subtree:true,characterData:true});
+var sheet=document.getElementById("sheet");
+function showSheet(id){["smenu","sabout","spriv"].forEach(function(x){document.getElementById(x).hidden=x!==id});sheet.hidden=false}
+function closeSheet(){sheet.hidden=true}
+function go(k){
+ var tabs={list:"t1",live:"t2",mem:"t3",story:"t4"};
+ if(k==="menu"){showSheet("smenu");return}
+ if(k==="about"){showSheet("sabout");return}
+ if(k==="privacy"){showSheet("spriv");return}
+ closeSheet();
+ if(tabs[k]){document.getElementById(tabs[k]).click();window.scrollTo(0,0)}
+ else if(k==="home"){document.getElementById("t1").click();window.scrollTo({top:0,behavior:"smooth"})}
+ else if(k==="gs"){document.getElementById("t1").click();var g=document.getElementById("gs");g.open=true;g.scrollIntoView({behavior:"smooth"})}
+ else if(k==="sync"){document.getElementById("t1").click();var sb=document.getElementById("syncbox");sb.hidden=false;sb.open=true;sb.scrollIntoView({behavior:"smooth"})}
+}
+document.addEventListener("click",function(e){
+ var b=e.target.closest("[data-go]");
+ if(b){e.preventDefault();go(b.getAttribute("data-go"));return}
+ if(e.target===sheet)closeSheet();
+});
+document.getElementById("menubtn").addEventListener("click",function(){showSheet("smenu")});
+document.getElementById("sclose").addEventListener("click",closeSheet);
+document.addEventListener("keydown",function(e){if(e.key==="Escape")closeSheet()});
+document.getElementById("langbtn").addEventListener("click",function(){setLang(LANG==="zu"?"en":"zu")});
+document.getElementById("fshare").addEventListener("click",function(){
+ var u=location.origin+location.pathname,d={title:"Our Bucket List",text:"Plan it. Do it together. Remember it.",url:u};
+ if(navigator.share){navigator.share(d).catch(function(){})}else{try{navigator.clipboard.writeText(u);setSync("Link copied")}catch(e){}}
+});
 (function(){
  var gs=document.getElementById("gs"),seen=false;
  try{seen=localStorage.getItem("bucket-gs")==="1"}catch(e){}
@@ -795,6 +886,7 @@ document.getElementById("gs").addEventListener("click",function(e){
 })();
 rebuildItems();buildList();
 render();
+try{if(localStorage.getItem("bucket-lang")==="zu")setLang("zu")}catch(e){}
 </script>
 </body>
 </html>
