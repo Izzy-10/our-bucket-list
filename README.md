@@ -23,6 +23,7 @@ Dark, gold-and-purple ticket design. Works on any phone browser. No account need
 - **Stats:** tickets done, planned, memories saved, days together.
 - **Celebration:** gold confetti when the last ticket is stamped.
 - **isiZulu and English:** switch language from the ☰ menu.
+- **Visual tutorial:** **Get started →** (and ☰ → How it works) opens an 8-step picture guide.
 - **Getting started card and menu:** explains how to use the page.
 - **Live sync (optional):** both phones see the same list, using Firebase.
 
@@ -38,7 +39,11 @@ Dark, gold-and-purple ticket design. Works on any phone browser. No account need
 ### Open locally
 Download `index.html` and open it in a browser. It works straight away, saving to that device only.
 
-### Put it online with GitHub Pages
+### Put it online
+
+**Vercel:** import the repository at [vercel.com](https://vercel.com), keep the default settings and deploy. Your page is at `https://<project-name>.vercel.app`.
+
+**GitHub Pages:**
 1. Make the repository **Public**.
 2. Go to **Settings → Pages**.
 3. Under **Build and deployment → Source**, choose **Deploy from a branch**.
@@ -50,7 +55,7 @@ Download `index.html` and open it in a browser. It works straight away, saving t
 Sync is off until you add your own Firebase project.
 
 1. Create a project at [console.firebase.google.com](https://console.firebase.google.com).
-2. **Authentication → Sign-in method:** enable **Anonymous**. Under **Settings → Authorized domains**, add your GitHub Pages domain (for example `your-username.github.io`).
+2. **Authentication → Sign-in method:** enable **Anonymous**. Under **Settings → Authorized domains**, add the domain where your page lives (for example `your-username.github.io` or `your-project.vercel.app`).
 3. **Firestore Database → Create database:** keep the database ID `(default)`, choose a location, and start in **Production mode**.
 4. In Firestore, open **Rules**, replace everything with the rules below and **Publish**:
 
@@ -85,10 +90,16 @@ When the status line under the names says **● Synced live**, both phones are c
 - **Colours:** change the `--maroon`, `--navy`, `--purple` and `--gold` values at the top of the style block.
 - **Footer links:** search for `tiktok.com` and `wa.me` in `index.html` and replace them with your own.
 
+## Want it customised for you?
+
+To have this bucket list customised for you (your own tickets, colours, names or language), **send me a DM** on TikTok ([@sizwesibiya7](https://tiktok.com/@sizwesibiya7)) or email me.
+
 ## Author
 
 Built by **Sizwe Sicelimilo Sibiya** in Durban, South Africa.
 
-TikTok: [@sizwesibiya7](https://tiktok.com/@sizwesibiya7)
+TikTok: [@sizwesibiya7](https://tiktok.com/@sizwesibiya7)  
+GitHub: [Izzy-10](https://github.com/Izzy-10)  
+Email: ssibiya026m@ai.wethinkcode.co.za
 
 © 2026 Sizwe Sicelimilo Sibiya. All rights reserved.
